@@ -1,0 +1,13 @@
+﻿using Flat2.Core.Platform;
+using Silk.NET.Input;
+using var a = new GameWindow(new(800, 800), "Flat2 Test App");
+Console.WriteLine("Hello, World!");
+var jump = new InputAction(a._inputMgr).AddKey(Key.Space);
+jump.Pressed += (act, frames) => Console.WriteLine($"Jump pressed, frames: {frames}");
+jump.Held += (act, frames) => Console.WriteLine($"Jump held for {frames} frames");
+jump.Released += (act, frames) => Console.WriteLine($"Jump released after {frames} frames");
+var test = new InputAction(a._inputMgr).AddKey(Key.Space);
+test.Pressed += (act, frames) => Console.WriteLine("a");
+test.Held += (act, frames) => { a.size =(new(frames * 10, frames * 10)); a.title = ($"Flat2 Test App - Jump held for {frames} frames"); };
+test.Released += (act, frames) => a.title = ($"Flat2 Test App - Jump released after {frames} frames");
+a.Run();

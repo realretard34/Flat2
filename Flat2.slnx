@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="Flat2.Bridge/Flat2.Bridge.csproj" />
+  <Project Path="Flat2.Core/Flat2.Core.csproj" />
+  <Project Path="Flat2.TestApp/Flat2.TestApp.csproj" />
+</Solution>
