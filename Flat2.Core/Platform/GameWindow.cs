@@ -34,6 +34,9 @@ namespace Flat2.Core.Platform
         }
         private void OnWindowRender(double deltaTime)
         {
+            foreach (var scene in scenes)
+                if (scene.isActive)
+                    scene.OnRender();
             //Here all rendering should be done.
         }
 
