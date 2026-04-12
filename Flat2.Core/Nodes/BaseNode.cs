@@ -1,22 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Xml.Linq;
+﻿using Flat2.Core.Compontent;
+using Flat2.Core.Render;
+using FontStash.NET;
 
 namespace Flat2.Core.Nodes
 {
     public class BaseNode
     {
-        private BaseNode? _parent;
-        private readonly List<BaseNode> _children = new();
+        private readonly List<BaseNode> _children = [];
         /// <summary>
         /// 获取此节点的父节点。
         /// </summary>
-        public BaseNode? Parent => _parent;
+        public BaseNode? Parent { get; private set; }
         /// <summary>
         /// 获取此节点的子节点列表（只读）。
         /// </summary>
         public IReadOnlyList<BaseNode> Children => _children;
+        public IReadOnlyList<BaseComp> Components => _comps;
+        public List<BaseComp> _comps = [];
         /// <summary>
         /// 当节点被更新时调用。deltaTime参数表示自上次更新以来的时间（以秒为单位）。子类可以重写此方法来实现特定的更新逻辑。
         /// </summary>
@@ -29,7 +29,12 @@ namespace Flat2.Core.Nodes
         /// <summary>
         /// 当节点需要渲染时调用。子类可以重写此方法来实现特定的渲染逻辑。
         /// </summary>
-        public virtual void OnRender() { }
+        public virtual void OnRender(double deltaTime,RenderContext ctx) {
+            foreach (var child in Children) 
+                  child.OnRender(deltaTime, ctx);
+            foreach (var comp in Components)
+                comp.OnRender(deltaTime, ctx);
+        }
         /// <summary>
         /// 当节点被销毁时调用。子类可以重写此方法来执行清理逻辑，例如释放资源、取消订阅事件等。
         /// </summary>
@@ -46,19 +51,18 @@ namespace Flat2.Core.Nodes
         public void AddChild(BaseNode child)
         {
             if (child == null) throw new ArgumentNullException(nameof(child));
-            if (child._parent != null)
-                child._parent.RemoveChild(child);
-            child._parent = this;
+            child.Parent?.RemoveChild(child);
+            child.Parent = this;
             _children.Add(child);
         }
 
         public void RemoveChild(BaseNode child)
         {
             if (child == null) throw new ArgumentNullException(nameof(child));
-            if (child._parent != this) return;
+            if (child.Parent != this) return;
 
-            child._parent = null;
-            _children.Remove(child);
+            child.Parent = null;
+            _ = _children.Remove(child);
         }
     }
 }

@@ -4,7 +4,6 @@ using System.Numerics;
 
 namespace Flat2.Core.Platform
 {
-    // === 输入管理器 ===
     public class InputMgr : IDisposable
     {
         private readonly IWindow _window;
@@ -12,22 +11,16 @@ namespace Flat2.Core.Platform
         private IKeyboard _keyboard;
         private IMouse _mouse;
         private IGamepad _gamepad;
-        private HashSet<Key> _keysDown = [];
-        private HashSet<MouseButton> _mouseButtonsDown = [];
+        private readonly HashSet<Key> _keysDown = [];
+        private readonly HashSet<MouseButton> _mouseButtonsDown = [];
         private Vector2 _mousePosition;
         private Vector2 _mouseDelta;
         private HashSet<Key> _keysDownPrev = [];
         private HashSet<MouseButton> _mouseButtonsDownPrev = [];
         private Vector2 _mousePositionPrev;
-
-        // 手柄状态
-        private bool _gamepadConnected;
-        private HashSet<ButtonName> _gamepadButtonsDown = [];
+        private readonly HashSet<ButtonName> _gamepadButtonsDown = [];
         private HashSet<ButtonName> _gamepadButtonsDownPrev = [];
         private Vector2 _leftStick, _rightStick;
-        private float _leftTrigger, _rightTrigger;
-
-        // 管理所有注册的 InputAction（用于驱动事件）
         private readonly List<InputAction> _registeredActions = [];
         public InputMgr(ref IWindow window)
         {
@@ -63,21 +56,21 @@ namespace Flat2.Core.Platform
                 };
                 _gamepad.TriggerMoved += (gp, trigger) =>
                 {
-                    if (trigger.Index == 0) _leftTrigger = trigger.Position;
-                    else _rightTrigger = trigger.Position;
+                    if (trigger.Index == 0) GamepadLeftTrigger = trigger.Position;
+                    else GamepadRightTrigger = trigger.Position;
                 };
             }
-            _gamepadConnected = _gamepad?.IsConnected ?? false;
+            GamepadConnected = _gamepad?.IsConnected ?? false;
         }
         private void OnUpdate(double deltaTime)
         {
-            _keysDownPrev = [.. (_keysDown)];
-            _mouseButtonsDownPrev = [.. (_mouseButtonsDown)];
-            _gamepadButtonsDownPrev = [.. (_gamepadButtonsDown)]    ;
+            _keysDownPrev = [.. _keysDown];
+            _mouseButtonsDownPrev = [.. _mouseButtonsDown];
+            _gamepadButtonsDownPrev = [.. _gamepadButtonsDown];
             _mousePositionPrev = _mousePosition;
             _mouseDelta = _mousePosition - _mousePositionPrev;
             if (_gamepad != null)
-                _gamepadConnected = _gamepad.IsConnected;
+                GamepadConnected = _gamepad.IsConnected;
             foreach (var action in _registeredActions)
             {
                 action.Update();
@@ -90,23 +83,51 @@ namespace Flat2.Core.Platform
         }
         internal void UnregisterAction(InputAction action)
         {
-            _registeredActions.Remove(action);
+            _ = _registeredActions.Remove(action);
         }
 
-        public bool IsKeyDown(Key key) => _keysDown.Contains(key);
-        public bool IsKeyPressed(Key key) => _keysDown.Contains(key) && !_keysDownPrev.Contains(key);
-        public bool IsKeyReleased(Key key) => !_keysDown.Contains(key) && _keysDownPrev.Contains(key);
-        public bool IsMouseButtonDown(MouseButton btn) => _mouseButtonsDown.Contains(btn);
-        public bool IsMouseButtonPressed(MouseButton btn) => _mouseButtonsDown.Contains(btn) && !_mouseButtonsDownPrev.Contains(btn);
+        public bool IsKeyDown(Key key)
+        {
+            return _keysDown.Contains(key);
+        }
+
+        public bool IsKeyPressed(Key key)
+        {
+            return _keysDown.Contains(key) && !_keysDownPrev.Contains(key);
+        }
+
+        public bool IsKeyReleased(Key key)
+        {
+            return !_keysDown.Contains(key) && _keysDownPrev.Contains(key);
+        }
+
+        public bool IsMouseButtonDown(MouseButton btn)
+        {
+            return _mouseButtonsDown.Contains(btn);
+        }
+
+        public bool IsMouseButtonPressed(MouseButton btn)
+        {
+            return _mouseButtonsDown.Contains(btn) && !_mouseButtonsDownPrev.Contains(btn);
+        }
+
         public Vector2 MousePosition => _mousePosition;
         public Vector2 MouseDelta => _mouseDelta;
-        public bool IsGamepadButtonDown(ButtonName btn) => _gamepadButtonsDown.Contains(btn);
-        public bool IsGamepadButtonPressed(ButtonName btn) => _gamepadButtonsDown.Contains(btn) && !_gamepadButtonsDownPrev.Contains(btn);
+        public bool IsGamepadButtonDown(ButtonName btn)
+        {
+            return _gamepadButtonsDown.Contains(btn);
+        }
+
+        public bool IsGamepadButtonPressed(ButtonName btn)
+        {
+            return _gamepadButtonsDown.Contains(btn) && !_gamepadButtonsDownPrev.Contains(btn);
+        }
+
         public Vector2 GamepadLeftStick => _leftStick;
         public Vector2 GamepadRightStick => _rightStick;
-        public float GamepadLeftTrigger => _leftTrigger;
-        public float GamepadRightTrigger => _rightTrigger;
-        public bool GamepadConnected => _gamepadConnected;
+        public float GamepadLeftTrigger { get; private set; }
+        public float GamepadRightTrigger { get; private set; }
+        public bool GamepadConnected { get; private set; }
         public void Dispose()
         {
             _inputContext?.Dispose();
@@ -121,7 +142,6 @@ namespace Flat2.Core.Platform
         private readonly List<ButtonName> _gamepadButtons = [];
         private bool _wasDownLastFrame;
         private int _heldFrames;
-        // 事件定义：按下、按住、释放，参数为动作实例和当前累计帧数（按下时=1，按住时>=2）
         public event Action<InputAction, int>? Pressed;
         public event Action<InputAction, int>? Held;
         public event Action<InputAction, int>? Released;
@@ -133,14 +153,20 @@ namespace Flat2.Core.Platform
         public InputAction AddKey(Key key) { _keys.Add(key); return this; }
         public InputAction AddMouseButton(MouseButton btn) { _mouseButtons.Add(btn); return this; }
         public InputAction AddGamepadButton(ButtonName btn) { _gamepadButtons.Add(btn); return this; }
-        public bool IsDown() =>
-            _keys.Any(k => _input.IsKeyDown(k)) ||
-            _mouseButtons.Any(m => _input.IsMouseButtonDown(m)) ||
-            _gamepadButtons.Any(g => _input.IsGamepadButtonDown(g));
-        public bool IsPressed() =>
-            _keys.Any(k => _input.IsKeyPressed(k)) ||
-            _mouseButtons.Any(m => _input.IsMouseButtonPressed(m)) ||
-            _gamepadButtons.Any(g => _input.IsGamepadButtonPressed(g));
+        public bool IsDown()
+        {
+            return _keys.Any(_input.IsKeyDown) ||
+            _mouseButtons.Any(_input.IsMouseButtonDown) ||
+            _gamepadButtons.Any(_input.IsGamepadButtonDown);
+        }
+
+        public bool IsPressed()
+        {
+            return _keys.Any(_input.IsKeyPressed) ||
+                    _mouseButtons.Any(_input.IsMouseButtonPressed) ||
+                    _gamepadButtons.Any(_input.IsGamepadButtonPressed);
+        }
+
         internal void Update()
         {
             bool isDownNow = IsDown();
@@ -176,7 +202,11 @@ namespace Flat2.Core.Platform
     {
         private readonly InputMgr _input;
         private readonly List<Func<float>> _sources = [];
-        public InputAxis(InputMgr input) => _input = input;
+        public InputAxis(InputMgr input)
+        {
+            _input = input;
+        }
+
         public InputAxis AddKey(Key negative, Key positive)
         {
             _sources.Add(() => (_input.IsKeyDown(positive) ? 1f : 0f) - (_input.IsKeyDown(negative) ? 1f : 0f));
@@ -192,11 +222,16 @@ namespace Flat2.Core.Platform
             _sources.Add(() => _input.GamepadConnected ? selector(_input.GamepadLeftStick) : 0f);
             return this;
         }
-        public float GetValue() => _sources.Sum(s => s()).Clamp(-1f, 1f);
+        public float GetValue()
+        {
+            return _sources.Sum(s => s()).Clamp(-1f, 1f);
+        }
     }
     public static class MathExtensions
     {
-        public static float Clamp(this float value, float min, float max) =>
-            value < min ? min : (value > max ? max : value);
+        public static float Clamp(this float value, float min, float max)
+        {
+            return value < min ? min : (value > max ? max : value);
+        }
     }
 }

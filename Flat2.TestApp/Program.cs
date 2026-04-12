@@ -1,6 +1,11 @@
-﻿using Flat2.Core.Platform;
+﻿using Flat2.Core.Nodes;
+using Flat2.Core.Platform;
 using Silk.NET.Input;
 using var a = new GameWindow(new(800, 800), "Flat2 Test App");
+var b= new Scene { SceneName = "TestScene" };
+a.ChangeScene(b);
+b.AddChild(new TestNode());
+b.AddChild(new Camera() {BackgroundColor=new(1,0.1f,0.2f,0.4f) });
 Console.WriteLine("Hello, World!");
 var jump = new InputAction(a._inputMgr).AddKey(Key.Space);
 jump.Pressed += (act, frames) => Console.WriteLine($"Jump pressed, frames: {frames}");
@@ -8,6 +13,6 @@ jump.Held += (act, frames) => Console.WriteLine($"Jump held for {frames} frames"
 jump.Released += (act, frames) => Console.WriteLine($"Jump released after {frames} frames");
 var test = new InputAction(a._inputMgr).AddKey(Key.Space);
 test.Pressed += (act, frames) => Console.WriteLine("a");
-test.Held += (act, frames) => { a.size =(new(frames * 10, frames * 10)); a.title = ($"Flat2 Test App - Jump held for {frames} frames"); };
-test.Released += (act, frames) => a.title = ($"Flat2 Test App - Jump released after {frames} frames");
+test.Held += (act, frames) => { a.Size =(new(frames * 10, frames * 10)); a.Title = ($"Flat2 Test App - Jump held for {frames} frames"); };
+test.Released += (act, frames) => a.Title = ($"Flat2 Test App - Jump released after {frames} frames");
 a.Run();
