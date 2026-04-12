@@ -1,18 +1,48 @@
 ﻿using Flat2.Core.Nodes;
 using Flat2.Core.Platform;
+using Flat2.Core.Comps;
 using Silk.NET.Input;
-using var a = new GameWindow(new(800, 800), "Flat2 Test App");
-var b= new Scene { SceneName = "TestScene" };
-a.ChangeScene(b);
-b.AddChild(new TestNode());
-b.AddChild(new Camera() {BackgroundColor=new(1,0.1f,0.2f,0.4f) });
-Console.WriteLine("Hello, World!");
-var jump = new InputAction(a._inputMgr).AddKey(Key.Space);
-jump.Pressed += (act, frames) => Console.WriteLine($"Jump pressed, frames: {frames}");
-jump.Held += (act, frames) => Console.WriteLine($"Jump held for {frames} frames");
-jump.Released += (act, frames) => Console.WriteLine($"Jump released after {frames} frames");
-var test = new InputAction(a._inputMgr).AddKey(Key.Space);
-test.Pressed += (act, frames) => Console.WriteLine("a");
-test.Held += (act, frames) => { a.Size =(new(frames * 10, frames * 10)); a.Title = ($"Flat2 Test App - Jump held for {frames} frames"); };
-test.Released += (act, frames) => a.Title = ($"Flat2 Test App - Jump released after {frames} frames");
-a.Run();
+using System.Numerics;
+
+// 1. 初始化窗口
+using var app = new GameWindow(new Vector2(800, 800), "Flat2 GC & Sprite Test");
+
+// 2. 创建一个带有资源的场景
+void SetupGameScene()
+{
+    var gameScene = new Scene { SceneName = "GameScene" };
+    gameScene.AddChild(new TestNode());
+    // 添加相机
+
+    app.ChangeScene(gameScene);
+}
+
+// 3. 初始加载
+app._window.Load += () => {
+    SetupGameScene();
+};
+
+// 4. 输入控制：按下 R 键重启场景（触发旧场景回收）
+app._window.Load += () => {
+    var input = new InputAction(app._inputMgr).AddKey(Key.R);
+    input.Pressed += (act, frames) => {
+        Console.WriteLine("--- Manual Trigger: Reloading Scene (GC Old One) ---");
+        SetupGameScene();
+    };
+
+    // 按下 Space 动态移除一个节点
+    var space = new InputAction(app._inputMgr).AddKey(Key.Space);
+    space.Pressed += (act, frames) => {
+        var player = app.ActiveScene.Children.FirstOrDefault(c => c.Name == "Player");
+        if (player != null)
+        {
+            // 手动调用 Dispose 模拟删除并回收显存
+            player.Dispose();
+            // 注意：你应该在引擎里实现一个 RemoveChild 并在内部调用 Dispose
+            Console.WriteLine("Player node and its texture destroyed.");
+        }
+    };
+};
+
+// 5. 运行
+app.Run();

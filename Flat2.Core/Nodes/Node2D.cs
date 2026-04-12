@@ -73,15 +73,5 @@ namespace Flat2.Core.Nodes
             else
                 _localToWorld = _localToParent;
         }
-
-        // 覆盖更新逻辑，可添加组件更新
-        public override void OnUpdate(double deltaTime)
-        {
-            base.OnUpdate(deltaTime);
-            foreach (var comp in _comps)
-            {
-                comp.OnUpdate(deltaTime);
-            }
-        }
     }
 }

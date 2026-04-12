@@ -1,68 +1,94 @@
-﻿using Flat2.Core.Compontent;
+﻿using Flat2.Core.Comps;
 using Flat2.Core.Render;
 using FontStash.NET;
-
+using Flat2.Core.Platform;
 namespace Flat2.Core.Nodes
 {
-    public class BaseNode
+    public class BaseNode:IStepObject
     {
         private readonly List<BaseNode> _children = [];
-        /// <summary>
-        /// 获取此节点的父节点。
-        /// </summary>
         public BaseNode? Parent { get; private set; }
-        /// <summary>
-        /// 获取此节点的子节点列表（只读）。
-        /// </summary>
+        public bool ShouldRenderFromCamera { get; set; } = false;
         public IReadOnlyList<BaseNode> Children => _children;
         public IReadOnlyList<BaseComp> Components => _comps;
         public List<BaseComp> _comps = [];
-        /// <summary>
-        /// 当节点被更新时调用。deltaTime参数表示自上次更新以来的时间（以秒为单位）。子类可以重写此方法来实现特定的更新逻辑。
-        /// </summary>
-        /// <param name="deltaTime"></param>
-        public virtual void OnUpdate(double deltaTime) { }
-        /// <summary>
-        /// 首次被加载时调用。子类可以重写此方法来执行初始化逻辑，例如加载资源、设置初始状态等。
-        /// </summary>
-        public virtual void OnLoad() { }
-        /// <summary>
-        /// 当节点需要渲染时调用。子类可以重写此方法来实现特定的渲染逻辑。
-        /// </summary>
-        public virtual void OnRender(double deltaTime,RenderContext ctx) {
-            foreach (var child in Children) 
-                  child.OnRender(deltaTime, ctx);
-            foreach (var comp in Components)
-                comp.OnRender(deltaTime, ctx);
+        public bool IsActive { get; set; } = true;
+        public string Name { get; set; }= "Node";
+        public virtual void OnUpdate(double deltaTime) {
+               foreach (var child in Children) 
+                     child.OnUpdate(deltaTime);
+               foreach (var comp in Components)
+                   comp.OnUpdate(deltaTime);
         }
-        /// <summary>
-        /// 当节点被销毁时调用。子类可以重写此方法来执行清理逻辑，例如释放资源、取消订阅事件等。
-        /// </summary>
+        public virtual void OnLoad() {
+                foreach (var child in Children) 
+                      child.OnLoad();
+                foreach (var comp in Components)
+                    comp.OnLoad();
+        }
+        public virtual void OnRender(double deltaTime,RenderContext ctx) {
+            if (this.ShouldRenderFromCamera == ctx.IsCameraPass)
+            {
+                foreach (var comp in Components)
+                {
+                    comp.OnRender(deltaTime, ctx);
+                }
+            }
+            foreach (var child in Children)
+            {
+                child.OnRender(deltaTime, ctx);
+            }
+        }
         public virtual void OnDestroy() { }
-        /// <summary>
-        /// 标记节点是否处于活动状态。只有当节点及其所有父节点都处于活动状态时，才会调用OnUpdate、OnRender等方法。子类可以根据需要重写此属性来实现特定的激活逻辑。
-        /// </summary>
-        public bool isActive { get; set; }
-        public string name { get; set; }
         protected BaseNode(string name = "Node")
         {
-            this.name = name;
+            this.Name = name;
         }
         public void AddChild(BaseNode child)
         {
-            if (child == null) throw new ArgumentNullException(nameof(child));
+            ArgumentNullException.ThrowIfNull(child);
             child.Parent?.RemoveChild(child);
             child.Parent = this;
             _children.Add(child);
         }
-
+        public void AddComp(BaseComp comp)
+        {
+            ArgumentNullException.ThrowIfNull(comp);
+            _comps.Add(comp);
+        }
+        public T? GetComponent<T>() where T : BaseComp
+        {
+            return _comps.OfType<T>().FirstOrDefault();
+        }
         public void RemoveChild(BaseNode child)
         {
             if (child == null) throw new ArgumentNullException(nameof(child));
             if (child.Parent != this) return;
 
             child.Parent = null;
+            child.Dispose();
             _ = _children.Remove(child);
+        }
+        public void RemoveComp(BaseComp comp)
+        {
+            if (comp == null) throw new ArgumentNullException(nameof(comp));
+            if (!_comps.Contains(comp)) return;
+            comp.Dispose();
+            _ = _comps.Remove(comp);
+        }
+        public void Dispose()
+        {
+            foreach (var comp in _comps)
+            {
+                comp.Dispose();
+            }
+            _comps.Clear();
+            foreach (var child in _children)
+            {
+                child.Dispose();
+            }
+            _children.Clear();
+            OnDestroy();
         }
     }
 }

@@ -7,8 +7,6 @@ using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text;
 using Silk.NET.Input;
-using Silk.NET.Maths;
-using Silk.NET.Windowing;
 using System.Drawing;
 using Flat2.Core.Nodes;
 using Flat2.Core.Render;
@@ -28,7 +26,6 @@ namespace Flat2.Core.Platform
             options.Size = new((int)size.X, (int)size.Y);
             options.Title = title;
             _window = Window.Create(options);
-            //Assign events.
             _window.Load += OnWindowLoad;
             _window.Update += OnWindowUpdate;
             _window.Render += OnWindowRender;
@@ -37,42 +34,32 @@ namespace Flat2.Core.Platform
         }
         private void OnWindowRender(double deltaTime)
         {
-            if (ActiveScene == null) return;
-            Camera? mainCamera = ActiveScene.MainCamera;
-            if (mainCamera != null)
-            {
-                mainCamera.ViewportSize = Size;
-                _renderContext.SetClearColor(
-                    new Vector4(
-                    mainCamera.BackgroundColor.X,
-                    mainCamera.BackgroundColor.Y,
-                    mainCamera.BackgroundColor.Z,
-                    mainCamera.BackgroundColor.W
-                    )
-                );
-                _renderContext.ProjectionView = mainCamera.GetProjectionViewMatrix();
-            }
+             if (ActiveScene == null) return;
+            //获取当前场景的主相机，设置渲染上下文的投影矩阵
+
             _renderContext.BeginFrame();
             ActiveScene.OnRender(deltaTime, _renderContext);
             _renderContext.EndFrame();
         }
-        public void ChangeScene(Scene scene){
-            foreach  (var s in scenes){
-                if(s == scene){
-                    ActiveScene = s;
-                    return;
-                }
+        public void ChangeScene(Scene newScene)
+        {
+            //包含则切换，不包含则添加后切换
+            if (ActiveScene != null && ActiveScene != newScene)
+            {
+                ActiveScene.Dispose();
             }
-            scenes.Add(scene);
-            ActiveScene = scene;
+            if (!scenes.Contains(newScene)) scenes.Add(newScene);
+            ActiveScene = newScene;
         }
         public void ChangeSceneTemp(Scene scene) {
+            //临时切换，不添加到场景列表中
             ActiveScene = scene;
         }
         private void OnWindowUpdate(double deltaTime)
         {
+            if (ActiveScene == null) return;
+            ActiveScene.OnUpdate(deltaTime);
         }
-
         private void OnWindowLoad()
         {
             _renderContext = new RenderContext(_window);
