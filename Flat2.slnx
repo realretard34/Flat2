@@ -1,5 +1,7 @@
 <Solution>
   <Project Path="Flat2.Bridge/Flat2.Bridge.csproj" />
+  <Project Path="Flat2.Core.Test/Flat2.Core.Test.csproj" Id="a263cbb1-0769-4329-bf22-444d51f8d3f6" />
   <Project Path="Flat2.Core/Flat2.Core.csproj" />
+  <Project Path="Flat2.Document.Ob/Flat2.Document.Ob.csproj" Id="bbe7ea7e-d05f-4740-935f-7928a9b969ef" />
   <Project Path="Flat2.TestApp/Flat2.TestApp.csproj" />
 </Solution>

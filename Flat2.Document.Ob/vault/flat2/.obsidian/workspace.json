@@ -1,0 +1,243 @@
+{
+  "main": {
+    "id": "98931d6d995cf061",
+    "type": "split",
+    "children": [
+      {
+        "id": "83b07fd022e2efb7",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "e2ced521b304432d",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "RenderContext.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "RenderContext"
+            }
+          },
+          {
+            "id": "4733fb5672f0fddb",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "RenderContext.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "RenderContext"
+            }
+          },
+          {
+            "id": "34e77df9b527cdc7",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Compontent.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Compontent"
+            }
+          },
+          {
+            "id": "133c1b7909680263",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "核心架构.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "核心架构"
+            }
+          }
+        ],
+        "currentTab": 1
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "590be56a3ac85816",
+    "type": "split",
+    "children": [
+      {
+        "id": "f5206f1a7fc1a2a7",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "b51aa2b8ee94fab6",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "文件列表"
+            }
+          },
+          {
+            "id": "ec7b1dd9ceaf8b4b",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "搜索"
+            }
+          },
+          {
+            "id": "b29b832b7a2ff1c8",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "书签"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "82b7de37b1603d89",
+    "type": "split",
+    "children": [
+      {
+        "id": "76f6973228a80444",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "a274dab5471f6e88",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "Node.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Node 的反向链接列表"
+            }
+          },
+          {
+            "id": "795ffaeb12d92a69",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "Node.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Node 的出链列表"
+            }
+          },
+          {
+            "id": "afec8af1ee92ae64",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "标签"
+            }
+          },
+          {
+            "id": "349a77ddb933cfdc",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "添加笔记属性"
+            }
+          },
+          {
+            "id": "4a076ff260ff09fa",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "Node.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Node 的大纲"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:打开快速切换": false,
+      "graph:查看关系图谱": false,
+      "canvas:新建白板": false,
+      "daily-notes:打开/创建今天的日记": false,
+      "templates:插入模板": false,
+      "command-palette:打开命令面板": false,
+      "bases:新建数据库": false
+    }
+  },
+  "active": "4733fb5672f0fddb",
+  "lastOpenFiles": [
+    "Node.md",
+    "核心架构.md",
+    "Compontent.md",
+    "RenderContext.md",
+    "Flat2.Core.md",
+    "未命名",
+    "Flat2.Core/Renderer",
+    "Flat2.Core",
+    "创建链接.md",
+    "欢迎.md",
+    "未命名.base"
+  ]
+}

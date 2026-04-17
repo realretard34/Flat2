@@ -7,10 +7,10 @@ namespace Flat2.Core.Platform
     public class InputMgr : IDisposable
     {
         private readonly IWindow _window;
-        private IInputContext _inputContext;
-        private IKeyboard _keyboard;
-        private IMouse _mouse;
-        private IGamepad _gamepad;
+        private IInputContext? _inputContext;
+        private IKeyboard? _keyboard;
+        private IMouse? _mouse;
+        private IGamepad? _gamepad;
         private readonly HashSet<Key> _keysDown = [];
         private readonly HashSet<MouseButton> _mouseButtonsDown = [];
         private Vector2 _mousePosition;
@@ -27,6 +27,7 @@ namespace Flat2.Core.Platform
             _window = window;
             _window.Load += OnWindowLoad;
             _window.Update += OnUpdate;
+            
         }
         private void OnWindowLoad()
         {
