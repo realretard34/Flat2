@@ -30,6 +30,18 @@ namespace Flat2.Core.Nodes
         }
         public abstract void OnLoad();
         public abstract void OnUpdate(double deltaTime);
-                public abstract void OnRender(double deltaTime,RenderContext renderContext);
+        public abstract void OnRender(double deltaTime,RenderContext renderContext);
+        public abstract void OnDestroy();
+        public void AddChild(Node child)
+        {
+            if (Children == null) Children = new List<Node>();
+            child.Parent = this;
+            Children.Add(child);
+        }
+        public void AddComp(Comp comp)
+        {
+            if (Comps == null) Comps = new List<Comp>();
+            Comps.Add(comp);
+        }
     }
 }

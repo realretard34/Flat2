@@ -39,12 +39,10 @@ namespace Flat2.Core.Renderer
         public void Begin()
         {
             CommandList.Begin();
-          // CommandList.SetFramebuffer(OffscreenFramebuffer);
+            CommandList.SetFramebuffer(OffscreenFramebuffer);
         }
         public void Submit()
         {
-            CommandList.SetFramebuffer(SwapChainFrameBuffer);
-            CommandList.ClearColorTarget(0, RgbaFloat.CornflowerBlue);
             CommandList.End();
             Device.SubmitCommands(CommandList);
             Device.SwapBuffers();

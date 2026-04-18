@@ -11,5 +11,4 @@ namespace Flat2.Core.Nodes
         int Index { get; }
         Matrix4x4 GetFinalMatrix(Node node, Camera camera, RenderContext context);
     }
-
 }

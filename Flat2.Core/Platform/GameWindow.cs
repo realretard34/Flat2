@@ -1,5 +1,4 @@
 ﻿using Flat2.Core.Nodes;
-using Flat2.Core.Render;
 using Flat2.Core.Renderer;
 using Silk.NET.Maths;
 using Silk.NET.Windowing;

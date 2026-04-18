@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Flat2.Core.Nodes
 {
-    public class Scene:Node
+    public class Scene : Node
     {
         public Camera? MainCamera { get; private set; }
         public List<Node> Nodes { get; private set; } = [];
@@ -14,6 +14,12 @@ namespace Flat2.Core.Nodes
         {
             Layers[layer.Index] = layer;
         }
+
+        public override void OnDestroy()
+        {
+            throw new NotImplementedException();
+        }
+
         public override void OnLoad()
         {
             throw new NotImplementedException();

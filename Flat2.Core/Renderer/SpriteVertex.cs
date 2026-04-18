@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using Veldrid;
 
-namespace Flat2.Core.Render
+namespace Flat2.Core.Renderer
 {
     public struct Vertex
     {
