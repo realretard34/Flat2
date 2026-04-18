@@ -1,4 +1,5 @@
-﻿using Veldrid;
+﻿using System;
+using Veldrid;
 
 namespace Flat2.Core.Renderer
 {
@@ -8,36 +9,59 @@ namespace Flat2.Core.Renderer
         public ResourceFactory Factory => Device.ResourceFactory;
         public Framebuffer SwapChainFrameBuffer => Device.MainSwapchain.Framebuffer;
         public CommandList CommandList { get; }
-
+        public Texture MainColorTexture { get; private set; }
+        public Framebuffer OffscreenFramebuffer { get; private set; }
         public Sampler LinearSampler { get; }
-        public DeviceBuffer CameraBuffer { get; } // 存储相机矩阵的常量缓冲
+        public DeviceBuffer CameraBuffer { get; }
         public RenderContext(GraphicsDevice device)
         {
             Device = device;
             CommandList = Factory.CreateCommandList();
             LinearSampler = Device.LinearSampler;
-            CameraBuffer = Factory.CreateBuffer(new BufferDescription(128, BufferUsage.UniformBuffer | BufferUsage.Dynamic));
-            }
+            CameraBuffer = Factory.CreateBuffer(new BufferDescription(64 * 4, BufferUsage.UniformBuffer | BufferUsage.Dynamic));
+            CommandList.Begin();
+            CommandList.SetFramebuffer(SwapChainFrameBuffer);
+            CommandList.ClearColorTarget(0, RgbaFloat.CornflowerBlue);
+            CommandList.End();
+            // 初始化主离屏画布，默认与屏幕尺寸一致
+            CreateOffscreenResources(SwapChainFrameBuffer.Width, SwapChainFrameBuffer.Height);
+        }
+        private void CreateOffscreenResources(uint width, uint height)
+        {
+            MainColorTexture?.Dispose();
+            OffscreenFramebuffer?.Dispose();
+            MainColorTexture = Factory.CreateTexture(TextureDescription.Texture2D(
+                width, height, 1, 1, PixelFormat.R8_G8_B8_A8_UNorm,
+                TextureUsage.RenderTarget | TextureUsage.Sampled));
+            OffscreenFramebuffer = Factory.CreateFramebuffer(new FramebufferDescription(null, MainColorTexture));
+        }
 
         public void Begin()
         {
             CommandList.Begin();
+          // CommandList.SetFramebuffer(OffscreenFramebuffer);
         }
-
         public void Submit()
         {
+            CommandList.SetFramebuffer(SwapChainFrameBuffer);
+            CommandList.ClearColorTarget(0, RgbaFloat.CornflowerBlue);
             CommandList.End();
             Device.SubmitCommands(CommandList);
             Device.SwapBuffers();
         }
+
         public void Resize(uint width, uint height)
         {
             Device.ResizeMainWindow(width, height);
+            CreateOffscreenResources(width, height);
         }
+
         public void Dispose()
         {
-            CommandList.Dispose();
+            MainColorTexture?.Dispose();
+            OffscreenFramebuffer?.Dispose();
+            CameraBuffer?.Dispose();
+            CommandList?.Dispose();
         }
     }
 }
-

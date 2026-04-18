@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Flat2.Core.Nodes
 {
-    public class Node2D: Node
+    public abstract class Node2D: Node
     {
         public Vector2 Position { get; set; }
         public Vector2 Rotation { get; set; }

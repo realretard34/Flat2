@@ -1,4 +1,5 @@
 ﻿using Flat2.Core.Comps;
+using Flat2.Core.Renderer;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
@@ -11,8 +12,6 @@ namespace Flat2.Core.Nodes
         public Node? Parent { get; private set; }
         public List<Node>? Children { get; private set; }
         public List<Comp>? Comps { get; private set; }
-
-        // 核心矩阵
         protected Matrix4x4 _localTransform { get; private set; }
         protected Matrix4x4 _globalTransform { get; private set; }
         protected bool _dirty { get; private set; } = true;
@@ -29,5 +28,8 @@ namespace Flat2.Core.Nodes
                 return _globalTransform;
             }
         }
+        public abstract void OnLoad();
+        public abstract void OnUpdate(double deltaTime);
+                public abstract void OnRender(double deltaTime,RenderContext renderContext);
     }
 }
